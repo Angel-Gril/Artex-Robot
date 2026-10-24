@@ -18,6 +18,7 @@
 #   ARTEX_SKIP_FRONTEND=1             Reuse server/webui/dist (for CI artifact builds).
 #   ARTEX_SKIP_NPM_CI=1               Skip npm ci while rebuilding the frontend.
 #   ARTEX_GOSUMDB=sum.golang.org      Go checksum database.
+#   ARTEX_PACKAGE_NORMA=1             Include the separately versioned Norma SDK zip.
 set -euo pipefail
 
 cd "$(cd "$(dirname "$0")" && pwd)"
@@ -36,6 +37,7 @@ usage() {
 
 选项：
   --release              构建 Linux、macOS、Windows 的 amd64/arm64 目标并生成 zip
+  --sdk                  只打包仓库内独立版本的 Norma SDK，不编译 ARTEX
   --target OS/ARCH       设置单个目标，例如 windows/amd64
   --upx                  强制使用 UPX 压缩二进制（可能影响部分 Linux 环境兼容性）
   --no-compress          不使用 UPX，仅使用 Go linker 裁剪并压缩 zip
@@ -50,12 +52,19 @@ RELEASE_TARGETS_DEFAULT="linux/amd64,linux/arm64,darwin/amd64,darwin/arm64,windo
 ARTEX_RELEASE="${ARTEX_RELEASE:-0}"
 ARTEX_COMPRESS="${ARTEX_COMPRESS:-off}"
 ARTEX_PACKAGE="${ARTEX_PACKAGE:-0}"
+ARTEX_SDK_ONLY="${ARTEX_SDK_ONLY:-0}"
+ARTEX_PACKAGE_NORMA="${ARTEX_PACKAGE_NORMA:-0}"
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --release)
       ARTEX_RELEASE=1
       ARTEX_PACKAGE=1
+      shift
+      ;;
+    --sdk)
+      ARTEX_SDK_ONLY=1
+      ARTEX_PACKAGE_NORMA=1
       shift
       ;;
     --target)
@@ -102,6 +111,35 @@ ARTEX_BUILD_VERSION="${ARTEX_BUILD_VERSION#v}"
 ARTEX_OUTPUT_DIR="${ARTEX_OUTPUT_DIR:-dist}"
 ARTEX_PACKAGE_DIR="${ARTEX_PACKAGE_DIR:-$ARTEX_OUTPUT_DIR}"
 ARTEX_UPX_ARGS="${ARTEX_UPX_ARGS:---best --lzma}"
+
+norma_version() {
+  [ -f norma/VERSION ] || die "缺少 norma/VERSION，无法确定独立 SDK 版本"
+  norma_version_value="$(tr -d '[:space:]' < norma/VERSION)"
+  case "$norma_version_value" in
+    v[0-9]*.[0-9]*.[0-9]*) printf '%s' "$norma_version_value" ;;
+    *) die "norma/VERSION 不是合法语义版本：$norma_version_value" ;;
+  esac
+}
+
+package_norma() {
+  command -v zip >/dev/null 2>&1 || die "打包 Norma 需要 zip"
+  sdk_version="$(norma_version)"
+  sdk_name="norma-${sdk_version}"
+  sdk_root="${ARTEX_PACKAGE_DIR}/${sdk_name}"
+  sdk_archive="${ARTEX_PACKAGE_DIR}/${sdk_name}.zip"
+  rm -rf "$sdk_root" "$sdk_archive"
+  mkdir -p "$sdk_root"
+  cp -R norma "$sdk_root/"
+  (cd "$ARTEX_PACKAGE_DIR" && zip -q -r -9 "$(basename "$sdk_archive")" "$(basename "$sdk_root")")
+  rm -rf "$sdk_root"
+  ok "Norma SDK 包：$sdk_archive"
+}
+
+if [ "$ARTEX_SDK_ONLY" = "1" ]; then
+  mkdir -p "$ARTEX_PACKAGE_DIR"
+  package_norma
+  exit 0
+fi
 
 if [ "${ARTEX_RELEASE}" = "1" ]; then
   ARTEX_TARGETS="${ARTEX_TARGETS:-$RELEASE_TARGETS_DEFAULT}"
@@ -258,6 +296,7 @@ for target in "${targets[@]}"; do
 done
 
 if [ "$ARTEX_PACKAGE" = "1" ]; then
+  if [ "$ARTEX_PACKAGE_NORMA" = "1" ]; then package_norma; fi
   write_checksums
   info "Release 包已生成于：$ARTEX_PACKAGE_DIR"
 fi

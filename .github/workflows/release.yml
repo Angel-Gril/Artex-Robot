@@ -119,9 +119,24 @@ jobs:
           name: bin-linux-${{ matrix.goarch }}
           path: dist/artex-linux-${{ matrix.goarch }}/artex
 
+  # ③ 单独打包 Norma SDK。它与 ARTEX 应用保持独立版本和模块路径。
+  sdk:
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.commit }}
+      - name: Package vendored Norma SDK
+        run: ARTEX_PACKAGE_DIR=dist ./build.sh --sdk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: norma-sdk
+          path: dist/norma-*.zip
+
   # ③ 汇总所有 zip → 创建 GitHub Release
   release:
-    needs: [prepare, binaries, docker-publish]
+    needs: [prepare, binaries, sdk, docker-publish]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -135,6 +150,10 @@ jobs:
           pattern: pkg-*
           merge-multiple: true
           path: dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: norma-sdk
+          path: dist
       - name: Generate checksums
         working-directory: dist
         run: |
@@ -142,6 +161,7 @@ jobs:
           for target in linux-amd64 linux-arm64 darwin-amd64 darwin-arm64 windows-amd64; do
             test -s "artex-${version}-${target}.zip"
           done
+          test -s "norma-v0.4.4.zip"
           sha256sum *.zip > SHA256SUMS
           sha256sum --check SHA256SUMS
       - name: Replace release only when the tag moved to a new commit

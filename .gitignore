@@ -27,7 +27,9 @@ web/public/demo-version.json
 *.swo
 
 # docs
-/docs/
+/docs/*
+!/docs/VERSIONING.md
+!/docs/BUILDING.md
 
 # os
 .DS_Store
