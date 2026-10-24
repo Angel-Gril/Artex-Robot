@@ -1,10 +1,14 @@
 module github.com/Autumn-27/artex
 
+// Norma is vendored under ./norma for reproducible builds. The nested module
+// keeps its upstream path so ARTEX and Norma remain independently versioned.
+replace github.com/Autumn-27/norma => ./norma
+
 go 1.26.3
 
 require (
 	mvdan.cc/sh/v3 v3.10.0
-	github.com/Autumn-27/norma v0.4.3
+	github.com/Autumn-27/norma v0.4.4
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.10.0
