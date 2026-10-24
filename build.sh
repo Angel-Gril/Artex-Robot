@@ -266,6 +266,16 @@ package_binary() {
   fi
   cp -R skills "$package_root/"
   cp config.example.json "$package_root/"
+  # The Seep adapter is a small optional boundary layer; the external Seep
+  # checkout and its GPL-3.0 toolchain are intentionally not copied here.
+  if [ -f scripts/seep-mcp-guard.py ]; then
+    mkdir -p "$package_root/scripts"
+    cp scripts/seep-mcp-guard.py "$package_root/scripts/"
+  fi
+  if [ -f config/seep-mcp.example.json ]; then
+    mkdir -p "$package_root/config"
+    cp config/seep-mcp.example.json "$package_root/config/"
+  fi
   if [ -f README.md ]; then cp README.md "$package_root/"; fi
   if [ -f LICENSE ]; then cp LICENSE "$package_root/"; fi
   if [ -f CHANGELOG.md ]; then cp CHANGELOG.md "$package_root/"; fi

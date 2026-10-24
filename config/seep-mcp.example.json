@@ -1,0 +1,17 @@
+{
+  "name": "seep",
+  "transport": "stdio",
+  "command": "python",
+  "args": [
+    "<ARTEX_ROOT>\\scripts\\seep-mcp-guard.py"
+  ],
+  "env": {
+    "PYTHONIOENCODING": "utf-8",
+    "SEEP_ROOT": "<PINNED_SEEP_REVERSE_LAB_ROOT>",
+    "SEEP_WORKSPACE": "<APPROVED_SAMPLE_WORKSPACE>",
+    "SEEP_EXPECTED_COMMIT": "caa152e6e27b9b02aa833fdb2a98df0e8c30fddc"
+  },
+  "enabled": false,
+  "insecure": false,
+  "notes": "Add this MCP through ARTEX Settings. Keep disabled until the sample, scope, and Seep commit are approved."
+}

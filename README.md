@@ -80,6 +80,7 @@ AI 自主渗透测试系统（Go 后端 + Next.js 前端）
 
 - [`docs/DEFENSE.md`](docs/DEFENSE.md)：中文入口和使用范围；
 - [`docs/defense-en.md`](docs/defense-en.md)：英文防御指南；
+- [`docs/SEEP-INTEGRATION.md`](docs/SEEP-INTEGRATION.md)：可选的 Seep Reverse Lab 外部 MCP 集成和安全边界；
 - [`detections/`](detections/)：Sigma、Suricata、ATT&CK、MISP、主机 triage 和可复现检测测试。
 
 这些资料用于识别 ARTEX 运行痕迹、完善 SIEM/WAF/主机响应和事件调查。检测规则只能作为线索，不能单独完成归因。

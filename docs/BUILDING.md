@@ -93,6 +93,10 @@ ARTEX_PACKAGE_DIR=dist ./build.sh --sdk
 
 `--release` 生成各平台 ARTEX zip；`--sdk` 生成 `norma-v0.4.4.zip`。两者是独立文件，发布时共同写入 `SHA256SUMS`。
 
+应用 zip 会带上可选的 `scripts/seep-mcp-guard.py`、`config/seep-mcp.example.json`、
+`skills/seep-reverse/` 和 `docs/SEEP-INTEGRATION.md`。Seep 本体及其 GPL-3.0 工具链不随
+ARTEX 包分发，按集成文档固定到独立 checkout 后再通过 MCP 连接。
+
 ## Docker 构建
 
 ```bash
