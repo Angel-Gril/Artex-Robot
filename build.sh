@@ -28,6 +28,35 @@ ok() { printf '\033[32m[+]\033[0m %s\n' "$*"; }
 warn() { printf '\033[33m[!]\033[0m %s\n' "$*" >&2; }
 die() { printf '\033[31m[x]\033[0m %s\n' "$*" >&2; exit 1; }
 
+zip_directory() {
+  archive="$1"
+  root="$2"
+  if command -v zip >/dev/null 2>&1; then
+    (cd "$(dirname "$archive")" && zip -q -r -9 "$(basename "$archive")" "$(basename "$root")")
+    return 0
+  fi
+  python_zip=""
+  if command -v python >/dev/null 2>&1; then python_zip="python"; fi
+  if [ -z "$python_zip" ] && command -v python3 >/dev/null 2>&1; then python_zip="python3"; fi
+  if [ -n "$python_zip" ]; then
+    "$python_zip" - "$archive" "$root" <<'PY'
+import os
+import sys
+import zipfile
+
+archive, root = sys.argv[1:]
+base = os.path.dirname(os.path.abspath(root))
+with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as out:
+    for directory, _, files in os.walk(root):
+        for name in files:
+            path = os.path.join(directory, name)
+            out.write(path, os.path.relpath(path, base))
+PY
+    return 0
+  fi
+  die "打包需要 zip 或 Python 3（zipfile）"
+}
+
 usage() {
   cat <<'EOF'
 用法：
@@ -96,8 +125,6 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
-command -v go >/dev/null 2>&1 || die "未检测到 Go（项目需要 Go 1.26 或更高版本）"
-
 ARTEX_GOSUMDB="${ARTEX_GOSUMDB:-sum.golang.org}"
 if [ -z "${ARTEX_BUILD_VERSION:-}" ]; then
   if command -v git >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
@@ -122,7 +149,6 @@ norma_version() {
 }
 
 package_norma() {
-  command -v zip >/dev/null 2>&1 || die "打包 Norma 需要 zip"
   sdk_version="$(norma_version)"
   sdk_name="norma-${sdk_version}"
   sdk_root="${ARTEX_PACKAGE_DIR}/${sdk_name}"
@@ -130,7 +156,7 @@ package_norma() {
   rm -rf "$sdk_root" "$sdk_archive"
   mkdir -p "$sdk_root"
   cp -R norma "$sdk_root/"
-  (cd "$ARTEX_PACKAGE_DIR" && zip -q -r -9 "$(basename "$sdk_archive")" "$(basename "$sdk_root")")
+  zip_directory "$sdk_archive" "$sdk_root"
   rm -rf "$sdk_root"
   ok "Norma SDK 包：$sdk_archive"
 }
@@ -140,6 +166,8 @@ if [ "$ARTEX_SDK_ONLY" = "1" ]; then
   package_norma
   exit 0
 fi
+
+command -v go >/dev/null 2>&1 || die "未检测到 Go（项目需要 Go 1.26 或更高版本）"
 
 if [ "${ARTEX_RELEASE}" = "1" ]; then
   ARTEX_TARGETS="${ARTEX_TARGETS:-$RELEASE_TARGETS_DEFAULT}"
@@ -207,7 +235,6 @@ package_binary() {
   package_root="${ARTEX_PACKAGE_DIR}/${package_name}"
   archive="${ARTEX_PACKAGE_DIR}/${package_name}.zip"
 
-  command -v zip >/dev/null 2>&1 || die "打包需要 zip"
   rm -rf "$package_root" "$archive"
   mkdir -p "$package_root"
   cp "$binary" "$package_root/"
@@ -222,7 +249,7 @@ package_binary() {
   cp -R skills "$package_root/"
   cp config.example.json "$package_root/"
   if [ -f README.md ]; then cp README.md "$package_root/"; fi
-  (cd "$ARTEX_PACKAGE_DIR" && zip -q -r -9 "$(basename "$archive")" "$(basename "$package_root")")
+  zip_directory "$archive" "$package_root"
   rm -rf "$package_root"
   ok "Release 压缩包：$archive"
 }
