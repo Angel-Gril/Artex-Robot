@@ -4,6 +4,15 @@
 
 ## [Unreleased]
 
+## [0.3.25] - 2026-10-24
+
+### Artex-Robot 定版
+
+- 以原版 ARTEX `v0.3.15` 为谱系基线，合入 RuoJi6/ARTEX `v0.3.23` 的维护更新。
+- 恢复 Norma SDK `v0.4.4` 到独立 `norma/` module，根模块通过本地 `replace` 使用它。
+- 发布包包含五个平台 ARTEX 应用包、独立 `norma-v0.4.4.zip` 和 `SHA256SUMS`。
+- 更新源、Docker 构建和 README 统一指向 `Angel-Gril/Artex-Robot`。
+
 ## [0.3.18] - 2026-10-12
 
 ### 审批审查
@@ -935,3 +944,4 @@
 [0.3.4]: https://github.com/Autumn-27/ARTEX/compare/v0.3.3...v0.3.4
 [0.3.3]: https://github.com/Autumn-27/ARTEX/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/Autumn-27/ARTEX/compare/v0.3.1...v0.3.2
+
