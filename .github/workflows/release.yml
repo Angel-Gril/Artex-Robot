@@ -98,6 +98,7 @@ jobs:
           ARTEX_COMPRESS: "0"
           ARTEX_PACKAGE: "1"
           ARTEX_PACKAGE_DIR: dist
+          NORMA_AUTO_SYNC: "0"
         run: |
           ./build.sh --target "${ARTEX_TARGET_OS}/${ARTEX_TARGET_ARCH}"
       - name: Smoke test Linux amd64 binary
@@ -123,7 +124,7 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.commit }}
       - name: Package vendored Norma SDK
-        run: ARTEX_PACKAGE_DIR=dist ./build.sh --sdk
+        run: ARTEX_PACKAGE_DIR=dist NORMA_AUTO_SYNC=0 ./build.sh --sdk
       - uses: actions/upload-artifact@v4
         with:
           name: norma-sdk

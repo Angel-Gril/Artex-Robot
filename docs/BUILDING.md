@@ -25,6 +25,26 @@ norma/go.mod：module github.com/Autumn-27/norma
 
 Windows 建议使用 WSL2 或 Git Bash；如果不需要本地跨平台压缩包，可以直接使用 Docker 构建。
 
+## Norma 自动同步
+
+每次执行 `build.sh`，默认会查询 Go Module Proxy 的稳定版本列表。如果发现版本高于本地 `norma/VERSION`，脚本会下载对应源码、校验 zip 路径、更新 `norma/`、根 `go.mod`、`norma/VERSION` 和 `norma/SOURCE.json`。
+
+```bash
+# 自动同步最新稳定版后再构建
+./build.sh
+
+# 只检查，不修改工作树；发现更新时返回非零
+python3 scripts/sync-norma.py --check
+
+# 固定某个版本
+NORMA_VERSION=v0.4.4 ./build.sh
+
+# 完全离线/可复现构建：使用提交中已锁定的版本
+NORMA_AUTO_SYNC=0 ./build.sh
+```
+
+GitHub Release 工作流默认使用 `NORMA_AUTO_SYNC=0`，所以发布标签不会被构建机器上的更新版本悄悄改变。要更新 SDK，应先在开发分支运行自动同步，审阅 `norma/SOURCE.json` 和测试结果，再提交新的应用/SDK 版本。
+
 ## 验证两个 module
 
 ```bash

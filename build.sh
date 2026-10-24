@@ -19,6 +19,8 @@
 #   ARTEX_SKIP_NPM_CI=1               Skip npm ci while rebuilding the frontend.
 #   ARTEX_GOSUMDB=sum.golang.org      Go checksum database.
 #   ARTEX_PACKAGE_NORMA=1             Include the separately versioned Norma SDK zip.
+#   NORMA_AUTO_SYNC=1                 Check the Go Module Proxy and sync latest stable Norma.
+#   NORMA_VERSION=v0.4.4              Pin an exact Norma version during sync.
 set -euo pipefail
 
 cd "$(cd "$(dirname "$0")" && pwd)"
@@ -138,6 +140,17 @@ ARTEX_BUILD_VERSION="${ARTEX_BUILD_VERSION#v}"
 ARTEX_OUTPUT_DIR="${ARTEX_OUTPUT_DIR:-dist}"
 ARTEX_PACKAGE_DIR="${ARTEX_PACKAGE_DIR:-$ARTEX_OUTPUT_DIR}"
 ARTEX_UPX_ARGS="${ARTEX_UPX_ARGS:---best --lzma}"
+
+sync_norma() {
+  [ "${NORMA_AUTO_SYNC:-1}" = "0" ] && return 0
+  norma_python=""
+  if command -v python >/dev/null 2>&1; then norma_python="python"; fi
+  if [ -z "$norma_python" ] && command -v python3 >/dev/null 2>&1; then norma_python="python3"; fi
+  [ -n "$norma_python" ] || die "Norma 自动同步需要 Python 3；或设置 NORMA_AUTO_SYNC=0 使用锁定版本"
+  "$norma_python" scripts/sync-norma.py --auto
+}
+
+sync_norma
 
 norma_version() {
   [ -f norma/VERSION ] || die "缺少 norma/VERSION，无法确定独立 SDK 版本"

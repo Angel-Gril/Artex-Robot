@@ -20,6 +20,8 @@ Recommended release tags:
 
 Do not change the nested module path or copy ARTEX code into `norma/`. To update Norma, replace only the nested module from its Go proxy archive, verify its checksum, then run the ARTEX tests with the local `replace` in effect.
 
+Local `build.sh` runs `scripts/sync-norma.py --auto` by default. This keeps the SDK source synchronized with the Go Module Proxy while retaining a switch (`NORMA_AUTO_SYNC=0`) for release and offline reproducibility. The release workflow always disables auto-sync and builds the exact source committed under the release tag.
+
 ## Reproducible checks
 
 ```bash
