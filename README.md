@@ -6,7 +6,7 @@ AI 自主渗透测试系统（Go 后端 + Next.js 前端）
 
 版本基线、独立 Norma SDK 和构建命令见 [`docs/VERSIONING.md`](docs/VERSIONING.md) 与 [`docs/BUILDING.md`](docs/BUILDING.md)。
 
-维护者与上游署名见 [`CONTRIBUTORS.md`](CONTRIBUTORS.md)。
+当前维护者：**Angel-Gril**。原作者和上游维护者信息保留在 LICENSE、CHANGELOG 和 Git 历史中。
 
 
 🌐 **在线 Demo：未配置（建议本地隔离环境运行）**
