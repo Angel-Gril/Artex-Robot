@@ -27,14 +27,9 @@ jobs:
         id: version
         env:
           RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
-          ARTEX_DOCKER_IMAGE: ${{ vars.ARTEX_DOCKER_IMAGE }}
         run: |
           if [[ ! "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
-            echo "正式版本必须是 v主版本.次版本.修订号，例如 v0.3.15" >&2
-            exit 1
-          fi
-          if [[ ! "$ARTEX_DOCKER_IMAGE" =~ ^[a-z0-9][a-z0-9_-]*/[a-z0-9]+([._-][a-z0-9]+)*$ ]]; then
-            echo "请先配置 Actions 变量 ARTEX_DOCKER_IMAGE，格式为 Docker Hub 用户名/镜像名" >&2
+            echo "正式版本必须是 v主版本.次版本.修订号，例如 v0.3.24" >&2
             exit 1
           fi
           echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
@@ -136,7 +131,7 @@ jobs:
 
   # ③ 汇总所有 zip → 创建 GitHub Release
   release:
-    needs: [prepare, binaries, sdk, docker-publish]
+    needs: [prepare, binaries, sdk]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -194,9 +189,9 @@ jobs:
             dist/SHA256SUMS
           generate_release_notes: true
           body: |
-            Docker Hub 镜像：`${{ vars.ARTEX_DOCKER_IMAGE }}:${{ needs.prepare.outputs.tag }}`，同时提供 `latest`。
-            支持 Linux AMD64 / ARM64，Docker 会自动选择宿主机架构。
-            程序包提供 Linux、macOS 的 AMD64 / ARM64 及 Windows AMD64，并附 SHA256SUMS。
+            ARTEX application packages: Linux AMD64/ARM64, macOS AMD64/ARM64, Windows AMD64.
+            Norma SDK source package: `norma-v0.4.4.zip`.
+            All packages are covered by `SHA256SUMS`.
             部署和在线更新说明见本仓库 README。
       - name: Publish complete release
         run: gh release edit "$RELEASE_TAG" --draft=false --latest
@@ -204,6 +199,7 @@ jobs:
   # GITHUB_TOKEN 发布的 Release 不会再次触发 release: published 工作流。
   # 直接依赖发布 job，保证 ZIP、校验文件和镜像全部发布成功后才更新 Demo。
   demo:
+    if: ${{ vars.VERCEL_DEPLOY_ENABLED == 'true' }}
     needs: [prepare, release]
     uses: ./.github/workflows/demo.yml
     with:
@@ -214,6 +210,7 @@ jobs:
 
   # ④ 在原生 AMD64 / ARM64 runner 上构建和测试，再推送架构镜像。
   docker:
+    if: ${{ vars.ARTEX_DOCKER_IMAGE != '' }}
     needs: [prepare, binaries]
     strategy:
       fail-fast: false
@@ -285,6 +282,7 @@ jobs:
 
   # ⑤ 只有两种架构都通过启动验证，才发布正式版本和 latest 镜像。
   docker-publish:
+    if: ${{ vars.ARTEX_DOCKER_IMAGE != '' }}
     needs: [prepare, docker]
     runs-on: ubuntu-24.04
     steps:

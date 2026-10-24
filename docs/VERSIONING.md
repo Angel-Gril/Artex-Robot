@@ -15,7 +15,8 @@ Recommended release tags:
 - `artex-v0.3.15` — original application baseline;
 - `artex-v0.3.23` — application after the RuoJi6 maintenance update;
 - `norma-v0.4.4` — the vendored SDK snapshot;
-- `v0.3.23-norma.0.4.4` — an optional combined release tag for this repository.
+- `v0.3.24` — the combined application release based on RuoJi6 `v0.3.23` with Norma `v0.4.4`.
+- `v0.3.23-norma.0.4.4` — descriptive development tag retained for provenance.
 
 Do not change the nested module path or copy ARTEX code into `norma/`. To update Norma, replace only the nested module from its Go proxy archive, verify its checksum, then run the ARTEX tests with the local `replace` in effect.
 

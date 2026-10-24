@@ -6,6 +6,8 @@ AI 自主渗透测试系统（Go 后端 + Next.js 前端）
 
 版本基线、独立 Norma SDK 和构建命令见 [`docs/VERSIONING.md`](docs/VERSIONING.md) 与 [`docs/BUILDING.md`](docs/BUILDING.md)。
 
+维护者与上游署名见 [`CONTRIBUTORS.md`](CONTRIBUTORS.md)。
+
 
 🌐 **在线 Demo**： [https://artex-demo-ruoji6.vercel.app/](https://artex-demo-ruoji6.vercel.app/)
 
