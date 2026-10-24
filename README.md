@@ -74,6 +74,18 @@ AI 自主渗透测试系统（Go 后端 + Next.js 前端）
 
 ---
 
+## 防御分析与检测资料
+
+本仓库同时收录 ARTEX 行为的防御侧分析，不用于规避检测：
+
+- [`docs/DEFENSE.md`](docs/DEFENSE.md)：中文入口和使用范围；
+- [`docs/defense-en.md`](docs/defense-en.md)：英文防御指南；
+- [`detections/`](detections/)：Sigma、Suricata、ATT&CK、MISP、主机 triage 和可复现检测测试。
+
+这些资料用于识别 ARTEX 运行痕迹、完善 SIEM/WAF/主机响应和事件调查。检测规则只能作为线索，不能单独完成归因。
+
+---
+
 ## 安装
 
 > 依赖数据库 **PostgreSQL**；探索需配置 **LLM**（`ANTHROPIC_API_KEY` 或 `OPENAI_API_KEY`，也可在 UI 里配）。

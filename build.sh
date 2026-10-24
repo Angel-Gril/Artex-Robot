@@ -254,6 +254,10 @@ package_binary() {
   cp -R skills "$package_root/"
   cp config.example.json "$package_root/"
   if [ -f README.md ]; then cp README.md "$package_root/"; fi
+  if [ -f LICENSE ]; then cp LICENSE "$package_root/"; fi
+  if [ -f CHANGELOG.md ]; then cp CHANGELOG.md "$package_root/"; fi
+  if [ -d docs ]; then cp -R docs "$package_root/"; fi
+  if [ -d detections ]; then cp -R detections "$package_root/"; fi
   zip_directory "$archive" "$package_root"
   rm -rf "$package_root"
   ok "Release 压缩包：$archive"

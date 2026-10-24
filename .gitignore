@@ -30,6 +30,9 @@ web/public/demo-version.json
 /docs/*
 !/docs/VERSIONING.md
 !/docs/BUILDING.md
+!/docs/DEFENSE.md
+!/docs/defense-en.md
+!/docs/defense-ko.md
 
 # os
 .DS_Store
