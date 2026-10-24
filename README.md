@@ -4,18 +4,7 @@
 
 AI 自主渗透测试系统（Go 后端 + Next.js 前端）
 
-## 本项目版本基线
-
-本仓库是一个可复现的组合基板：ARTEX 应用以原版 `v0.3.15` 为谱系基线，合入 `RuoJi6/ARTEX v0.3.23` 的维护更新，并将 Norma SDK 独立恢复为 `v0.4.4`。
-
-```text
-ARTEX original baseline: e6ec569 (v0.3.15)
-ARTEX maintenance update: RuoJi6 v0.3.23
-Norma SDK: v0.4.4 (./norma)
-Combined tag: v0.3.23-norma.0.4.4
-```
-
-应用与 SDK 保持独立模块：根目录 `go.mod` 通过 `replace` 使用本地 `./norma`，而 `norma/go.mod` 仍保持上游模块路径 `github.com/Autumn-27/norma`。构建、测试和独立打包命令见 [`docs/BUILDING.md`](docs/BUILDING.md) 与 [`docs/VERSIONING.md`](docs/VERSIONING.md)。
+版本基线、独立 Norma SDK 和构建命令见 [`docs/VERSIONING.md`](docs/VERSIONING.md) 与 [`docs/BUILDING.md`](docs/BUILDING.md)。
 
 
 🌐 **在线 Demo**： [https://artex-demo-ruoji6.vercel.app/](https://artex-demo-ruoji6.vercel.app/)

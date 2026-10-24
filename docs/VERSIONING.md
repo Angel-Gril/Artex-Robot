@@ -24,7 +24,7 @@ Do not change the nested module path or copy ARTEX code into `norma/`. To update
 ```bash
 git show artex-v0.3.15:go.mod
 git show artex-v0.3.23:go.mod
-git -C norma tag --list                 # the nested module has its own history when maintained separately
+cat norma/VERSION
 go list -m all
 go mod verify
 go test ./...
